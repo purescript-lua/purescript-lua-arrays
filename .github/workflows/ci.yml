@@ -24,4 +24,7 @@ jobs:
         run: if [ -f scripts/test ]; then nix develop -c bash ./scripts/test; fi
 
       - name: Luacheck
-        run: nix develop -c luacheck --quiet --std lua51 --no-unused-args src/
+        run: nix develop -c luacheck --quiet --std lua51 --no-unused-args --max-line-length 130 src/
+
+      - name: Format check
+        run: nix fmt && git diff --exit-code

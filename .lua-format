@@ -1,0 +1,10 @@
+# LuaFormatter config for the hand-written FFI under src/.
+# 2-space indent. Keep simple functions on one line; column_limit sits a few
+# columns under luacheck's 130 limit because lua-format under-counts the leading
+# indent and trailing comma, so this keeps every emitted line within 130.
+indent_width: 2
+use_tab: false
+column_limit: 126
+continuation_indent_width: 2
+keep_simple_function_one_line: true
+keep_simple_control_block_one_line: true

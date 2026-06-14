@@ -106,7 +106,8 @@ shift = runSTFn3 shiftImpl Just Nothing
 
 foreign import shiftImpl
   :: forall h a
-   . STFn3 (forall b. b -> Maybe b) (forall b. Maybe b) (STArray h a) h (Maybe a)
+   . STFn3 (forall b. b -> Maybe b) (forall b. Maybe b) (STArray h a) h
+       (Maybe a)
 
 -- | Sort a mutable array in place using a comparison function. Sorting is
 -- | stable: the order of elements is preserved if they are equal according to
@@ -177,7 +178,8 @@ pop = runSTFn3 popImpl Just Nothing
 
 foreign import popImpl
   :: forall h a
-   . STFn3 (forall b. b -> Maybe b) (forall b. Maybe b) (STArray h a) h (Maybe a)
+   . STFn3 (forall b. b -> Maybe b) (forall b. Maybe b) (STArray h a) h
+       (Maybe a)
 
 -- | Append an element to the end of a mutable array. Returns the new length of
 -- | the array.

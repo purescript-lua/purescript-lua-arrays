@@ -720,7 +720,8 @@ splitAt i xs = { before: slice 0 i xs, after: slice i (length xs) xs }
 -- | powerSet :: forall a. Array a -> Array (Array a)
 -- | powerSet = filterA (const [true, false])
 -- | ```
-filterA :: forall a f. Applicative f => (a -> f Boolean) -> Array a -> f (Array a)
+filterA
+  :: forall a f. Applicative f => (a -> f Boolean) -> Array a -> f (Array a)
 filterA p =
   traverse (\x -> Tuple x <$> p x)
     >>> map (mapMaybe (\(Tuple x b) -> if b then Just x else Nothing))
@@ -771,9 +772,11 @@ mapWithIndex = FWI.mapWithIndex
 -- | updateAtIndices updates ["Hello", "World", "!"] = ["Hi", "World", "."]
 -- | ```
 -- |
-updateAtIndices :: forall t a. Foldable t => t (Tuple Int a) -> Array a -> Array a
+updateAtIndices
+  :: forall t a. Foldable t => t (Tuple Int a) -> Array a -> Array a
 updateAtIndices us xs =
-  ST.run (STA.withArray (\res -> traverse_ (\(Tuple i a) -> STA.poke i a res) us) xs)
+  ST.run
+    (STA.withArray (\res -> traverse_ (\(Tuple i a) -> STA.poke i a res) us) xs)
 
 -- | Apply a function to the element at the specified indices,
 -- | creating a new array. Out-of-bounds indices will have no effect.
@@ -784,7 +787,8 @@ updateAtIndices us xs =
 -- |    = ["Hello", "WORLD", "and", "OTHERS"]
 -- | ```
 -- |
-modifyAtIndices :: forall t a. Foldable t => t Int -> (a -> a) -> Array a -> Array a
+modifyAtIndices
+  :: forall t a. Foldable t => t Int -> (a -> a) -> Array a -> Array a
 modifyAtIndices is f xs =
   ST.run (STA.withArray (\res -> traverse_ (\i -> STA.modify i f res) is) xs)
 
@@ -841,7 +845,8 @@ transpose xs = go 0 []
   buildNext :: Int -> Maybe (Array a)
   buildNext idx = do
     xs # flip foldl Nothing \acc nextArr -> do
-      maybe acc (\el -> Just $ maybe [ el ] (flip snoc el) acc) $ index nextArr idx
+      maybe acc (\el -> Just $ maybe [ el ] (flip snoc el) acc) $ index nextArr
+        idx
 
 -- | Fold a data structure from the left, keeping all intermediate results
 -- | instead of only the final result. Note that the initial value does not
@@ -911,7 +916,8 @@ sortBy comp = runFn3 sortByImpl comp case _ of
 sortWith :: forall a b. Ord b => (a -> b) -> Array a -> Array a
 sortWith f = sortBy (comparing f)
 
-foreign import sortByImpl :: forall a. Fn3 (a -> a -> Ordering) (Ordering -> Int) (Array a) (Array a)
+foreign import sortByImpl
+  :: forall a. Fn3 (a -> a -> Ordering) (Ordering -> Int) (Array a) (Array a)
 
 --------------------------------------------------------------------------------
 -- Subarrays -------------------------------------------------------------------
@@ -1081,7 +1087,8 @@ groupBy op xs =
 -- |    = [NonEmptyArray [4], NonEmptyArray [3, 3, 3], NonEmptyArray [2], NonEmptyArray [1]]
 -- | ```
 -- |
-groupAllBy :: forall a. (a -> a -> Ordering) -> Array a -> Array (NonEmptyArray a)
+groupAllBy
+  :: forall a. (a -> a -> Ordering) -> Array a -> Array (NonEmptyArray a)
 groupAllBy cmp = groupBy (\x y -> cmp x y == EQ) <<< sortBy cmp
 
 -- | Remove the duplicates from an array, creating a new array.
@@ -1118,7 +1125,8 @@ nubBy comp xs = case head indexedAndSorted of
     -- TODO: use NonEmptyArrays here to avoid partial functions
     result <- STA.unsafeThaw $ singleton x
     ST.foreach indexedAndSorted \pair@(Tuple _ x') -> do
-      lst <- snd <<< unsafePartial (fromJust <<< last) <$> STA.unsafeFreeze result
+      lst <- snd <<< unsafePartial (fromJust <<< last) <$> STA.unsafeFreeze
+        result
       when (comp lst x' /= EQ) $ void $ STA.push pair result
     STA.unsafeFreeze result
   where
@@ -1192,7 +1200,8 @@ delete = deleteBy eq
 -- |
 deleteBy :: forall a. (a -> a -> Boolean) -> a -> Array a -> Array a
 deleteBy _ _ [] = []
-deleteBy eq x ys = maybe ys (\i -> unsafePartial $ fromJust (deleteAt i ys)) (findIndex (eq x) ys)
+deleteBy eq x ys = maybe ys (\i -> unsafePartial $ fromJust (deleteAt i ys))
+  (findIndex (eq x) ys)
 
 -- | Delete the first occurrence of each element in the second array from the
 -- | first array, creating a new array.
@@ -1341,7 +1350,8 @@ foreign import allImpl :: forall a. Fn2 (a -> Boolean) (Array a) Boolean
 -- | foldM (\x y -> Just (x + y)) 0 [1, 4] = Just 5
 -- | ```
 foldM :: forall m a b. Monad m => (b -> a -> m b) -> b -> Array a -> m b
-foldM f b = runFn3 unconsImpl (\_ -> pure b) (\a as -> f b a >>= \b' -> foldM f b' as)
+foldM f b = runFn3 unconsImpl (\_ -> pure b)
+  (\a as -> f b a >>= \b' -> foldM f b' as)
 
 foldRecM :: forall m a b. MonadRec m => (b -> a -> m b) -> b -> Array a -> m b
 foldRecM f b array = tailRecM2 go b 0

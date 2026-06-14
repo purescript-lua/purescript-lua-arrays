@@ -63,7 +63,8 @@ exhausted = map isNothing <<< peek
 
 -- | Extract elements from an iterator and push them on to an STArray for as
 -- | long as those elements satisfy a given predicate.
-pushWhile :: forall r a. (a -> Boolean) -> Iterator r a -> STArray r a -> ST r Unit
+pushWhile
+  :: forall r a. (a -> Boolean) -> Iterator r a -> STArray r a -> ST r Unit
 pushWhile p iter array = do
   break <- STRef.new false
   ST.while (not <$> STRef.read break) do
