@@ -41,7 +41,7 @@ return {
   length = (function(xs) return #xs end),
   unconsImpl = (function(empty, next, xs)
     if #xs == 0 then return empty({}) end
-    return next(xs[1])(table.pack(table.unpack(xs, 2)))
+    return next(xs[1])({ unpack(xs, 2) })
   end),
   indexImpl = (function(just, nothing, xs, i)
     if i < 0 or i >= #xs then
@@ -67,19 +67,19 @@ return {
   end),
   _insertAt = (function(just, nothing, i, a, l)
     if i < 0 or i > #l then return nothing end
-    local l1 = table.pack(table.unpack(l))
+    local l1 = { unpack(l) }
     table.insert(l1, i + 1, a)
     return just(l1)
   end),
   _deleteAt = (function(just, nothing, i, l)
     if i < 0 or i >= #l then return nothing end
-    local l1 = table.pack(table.unpack(l))
+    local l1 = { unpack(l) }
     table.remove(l1, i + 1)
     return just(l1)
   end),
   _updateAt = (function(just, nothing, i, f, l)
     if i < 0 or i >= #l then return nothing end
-    local l1 = table.pack(table.unpack(l))
+    local l1 = { unpack(l) }
     l1[i + 1] = f(l1[i + 1])
     return just(l1)
   end),
@@ -185,8 +185,8 @@ return {
 
     return function(compare, fromOrdering, xs)
       if #xs < 2 then return xs end
-      local out = table.pack(table.unpack(xs))
-      local slice = table.pack(table.unpack(xs))
+      local out = { unpack(xs) }
+      local slice = { unpack(xs) }
       mergeFromTo(compare, fromOrdering, out, slice, 0, #xs)
       return out
     end

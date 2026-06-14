@@ -1,4 +1,20 @@
-local function copyImpl(xs) return function() return table.move(xs, 1, #xs, 1, {}) end end
+-- Lua 5.1 has no table.move, so provide an overlap-safe equivalent with the
+-- same semantics as Lua 5.3's table.move(a1, f, e, t, a2): copy a1[f..e] to
+-- a2 starting at t, iterating backwards when the source and destination overlap
+-- so a forward shift to the right does not clobber elements before reading them.
+local function move(a1, f, e, t, a2)
+  a2 = a2 or a1
+  if e >= f then
+    if a1 ~= a2 or t <= f or t > e then
+      for i = 0, e - f do a2[t + i] = a1[f + i] end
+    else
+      for i = e - f, 0, -1 do a2[t + i] = a1[f + i] end
+    end
+  end
+  return a2
+end
+
+local function copyImpl(xs) return function() return move(xs, 1, #xs, 1, {}) end end
 
 return {
   new = (function() return {} end),
@@ -25,7 +41,7 @@ return {
     end
   end),
   pushAllImpl = (function(as, xs)
-    local r = table.move(as, 1, #as, #xs + 1, xs)
+    local r = move(as, 1, #as, #xs + 1, xs)
     return #r
   end),
   shiftImpl = (function(just, nothing, xs)
@@ -36,10 +52,10 @@ return {
     end
   end),
   unshiftAllImpl = (function(as, xs)
-    local r = table.move(as, 1, #as, 1, xs)
+    local r = move(as, 1, #as, 1, xs)
     return #r
   end),
-  spliceImpl = (function(i, howMany, bs, xs) return table.move(xs, i + howMany + 1, #xs, i + #bs + 1, xs) end),
+  spliceImpl = (function(i, howMany, bs, xs) return move(xs, i + howMany + 1, #xs, i + #bs + 1, xs) end),
   unsafeFreezeImpl = (function(xs) return xs end),
   unsafeThawImpl = (function(xs) return xs end),
   freeze = (copyImpl),
@@ -84,7 +100,7 @@ return {
 
     return function(compare, fromOrdering, xs)
       if #xs < 2 then return xs end
-      mergeFromTo(compare, fromOrdering, xs, table.move(xs, 1, #xs, 1, {}), 0, #xs)
+      mergeFromTo(compare, fromOrdering, xs, move(xs, 1, #xs, 1, {}), 0, #xs)
       return xs
     end
   end)()),

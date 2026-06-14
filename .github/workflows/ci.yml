@@ -4,32 +4,24 @@ on:
   push:
     branches: [master]
   pull_request:
-    branches: [master]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - uses: purescript-contrib/setup-purescript@main
+      - uses: cachix/install-nix-action@v27
         with:
-          purescript: "unstable"
+          extra_nix_config: |
+            extra-substituters = https://cache.iog.io https://purescript-lua.cachix.org
+            extra-trusted-public-keys = hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ= purescript-lua.cachix.org-1:yLs4ei2HtnuPtzLekOrW3xdfm95+Etw15gwgyIGTayA=
 
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "14.x"
+      - name: Build
+        run: nix develop -c ./scripts/build
 
-      - name: Install dependencies
-        run: |
-          npm install -g bower
-          npm install
-          bower install --production
+      - name: Test
+        run: if [ -f scripts/test ]; then nix develop -c bash ./scripts/test; fi
 
-      - name: Build source
-        run: npm run-script build
-
-      - name: Run tests
-        run: |
-          bower install
-          npm run-script test --if-present
+      - name: Luacheck
+        run: nix develop -c luacheck --quiet --std lua51 --no-unused-args src/
