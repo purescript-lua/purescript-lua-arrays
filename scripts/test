@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "Running regression tests..."
+
+lua test/regression/array_st.lua
