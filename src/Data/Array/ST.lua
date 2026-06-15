@@ -52,10 +52,25 @@ return {
     end
   end),
   unshiftAllImpl = (function(as, xs)
-    local r = move(as, 1, #as, 1, xs)
-    return #r
+    local na, nx = #as, #xs
+    for i = nx, 1, -1 do xs[i + na] = xs[i] end
+    for i = 1, na do xs[i] = as[i] end
+    return nx + na
   end),
-  spliceImpl = (function(i, howMany, bs, xs) return move(xs, i + howMany + 1, #xs, i + #bs + 1, xs) end),
+  spliceImpl = (function(i, howMany, bs, xs)
+    local n = #xs
+    local removed = {}
+    for k = 1, howMany do removed[k] = xs[i + k] end
+    local nb, delta = #bs, #bs - howMany
+    if delta > 0 then
+      for k = n, i + howMany + 1, -1 do xs[k + delta] = xs[k] end
+    elseif delta < 0 then
+      for k = i + howMany + 1, n do xs[k + delta] = xs[k] end
+      for k = n + delta + 1, n do xs[k] = nil end
+    end
+    for k = 1, nb do xs[i + k] = bs[k] end
+    return removed
+  end),
   unsafeFreezeImpl = (function(xs) return xs end),
   unsafeThawImpl = (function(xs) return xs end),
   freeze = (copyImpl),

@@ -61,19 +61,53 @@ do
   check("pushAllImpl returns length", n == 5, "got " .. tostring(n))
 end
 
--- spliceImpl shifting the tail LEFT (destination before source: forward copy).
+-- spliceImpl mirrors JS `xs.splice(i, howMany, ...bs)`: remove howMany
+-- elements at offset i, insert bs there, mutate xs in place, and RETURN the
+-- removed slice. (Issue #75 — the move-only version neither inserted nor
+-- returned the removed elements.)
 do
   local xs = {10, 20, 30, 40, 50}
-  ST.spliceImpl(1, 1, {}, xs) -- move(xs, 3, 5, 2, xs)
-  checkArray("spliceImpl shift-left overlap", xs, {10, 30, 40, 50, 50})
+  local removed = ST.spliceImpl(1, 1, {}, xs)
+  checkArray("spliceImpl removes one, no insert", xs, {10, 30, 40, 50})
+  checkArray("spliceImpl returns removed slice", removed, {20})
 end
 
--- spliceImpl shifting the tail RIGHT (destination inside source: must copy
--- backwards or it clobbers). This is the case a naive forward loop breaks.
 do
   local xs = {1, 2, 3, 4}
-  ST.spliceImpl(0, 0, {9}, xs) -- move(xs, 1, 4, 2, xs)
-  checkArray("spliceImpl shift-right overlap", xs, {1, 1, 2, 3, 4})
+  local removed = ST.spliceImpl(0, 0, {9}, xs)
+  checkArray("spliceImpl inserts, removes none", xs, {9, 1, 2, 3, 4})
+  checkArray("spliceImpl removed is empty", removed, {})
+end
+
+do
+  local xs = {10, 20, 30, 40, 50}
+  local removed = ST.spliceImpl(1, 2, {99}, xs)
+  checkArray("spliceImpl replaces two with one", xs, {10, 99, 40, 50})
+  checkArray("spliceImpl returns the two removed", removed, {20, 30})
+end
+
+do
+  local xs = {1, 2, 3}
+  local removed = ST.spliceImpl(1, 1, {8, 9}, xs)
+  checkArray("spliceImpl replaces one with two", xs, {1, 8, 9, 3})
+  checkArray("spliceImpl removed single", removed, {2})
+end
+
+-- unshiftAllImpl prepends `as` to the front of `xs` (shifting the existing
+-- elements right) and returns the new length. (Issue #74 — the move-only
+-- version overwrote the front instead of prepending.)
+do
+  local xs = {1, 2}
+  local n = ST.unshiftAllImpl({3, 4, 5}, xs)
+  checkArray("unshiftAllImpl prepends", xs, {3, 4, 5, 1, 2})
+  check("unshiftAllImpl returns length", n == 5, "got " .. tostring(n))
+end
+
+do
+  local xs = {1, 2}
+  local n = ST.unshiftAllImpl({}, xs)
+  checkArray("unshiftAllImpl empty is a no-op", xs, {1, 2})
+  check("unshiftAllImpl empty returns length", n == 2, "got " .. tostring(n))
 end
 
 -- sortByImpl sorts in place (it copies through move internally).

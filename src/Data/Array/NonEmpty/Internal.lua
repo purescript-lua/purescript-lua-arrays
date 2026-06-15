@@ -10,14 +10,11 @@ return {
     return acc
   end),
   traverse1Impl = ((function()
-    local function Cont(this, fn) this.fn = fn end
+    local function Cont(fn) return {fn = fn} end
 
     local emptyList = {}
 
-    local function ConsCell(this, head, tail)
-      this.head = head
-      this.tail = tail
-    end
+    local function ConsCell(head, tail) return {head = head, tail = tail} end
 
     local function finalCell(head) return ConsCell(head, emptyList) end
 

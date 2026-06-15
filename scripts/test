@@ -4,3 +4,4 @@ set -euo pipefail
 echo "Running regression tests..."
 
 lua test/regression/array_st.lua
+lua test/regression/nonempty.lua
