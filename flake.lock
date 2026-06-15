@@ -698,14 +698,15 @@
           "pslua",
           "haskellNix",
           "nixpkgs-unstable"
-        ]
+        ],
+        "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1781449244,
-        "narHash": "sha256-evfLWZ+i55b0cSfd/jgU5mXuBg2KDEP5WhEj2iuzIiM=",
+        "lastModified": 1781519566,
+        "narHash": "sha256-ptELm3Q4290+1grRnJS7JJgCbzvcKM6CyL9yt4qEmQM=",
         "owner": "purescript-lua",
         "repo": "purescript-lua",
-        "rev": "94c13cecd1146494de56196a7badb3b1374d364d",
+        "rev": "62e36537ecafd35081f521a7d49a7b1ae2e13ff7",
         "type": "github"
       },
       "original": {
@@ -741,7 +742,7 @@
         "nixpkgs": "nixpkgs",
         "pslua": "pslua",
         "purescript-overlay": "purescript-overlay",
-        "treefmt-nix": "treefmt-nix"
+        "treefmt-nix": "treefmt-nix_2"
       }
     },
     "stackage": {
@@ -806,6 +807,27 @@
       }
     },
     "treefmt-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "pslua",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1780220602,
+        "narHash": "sha256-eynAfOmbmxJnkp7YewvCEbShNnnYJ9gLLqkzsYtBPeM=",
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "rev": "db947814a175b7ca6ded66e21383d938df01c227",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "treefmt-nix_2": {
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
