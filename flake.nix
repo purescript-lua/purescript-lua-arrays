@@ -48,23 +48,9 @@
             spago-bin.spago-0_21_0
             treefmt
           ];
-          # Install a content-based pre-commit hook. It compares the working
-          # tree diff before and after `nix fmt`, so it only objects to changes
-          # the formatter itself introduces (not the developer's existing
-          # unstaged work) and is not fooled by formatters that only bump mtime.
-          # Rewritten each shell entry to stay in sync with this flake.
-          shellHook = ''
-            hook=.git/hooks/pre-commit
-            if [ -d .git ]; then
-              printf '%s\n' \
-                '#!/usr/bin/env bash' \
-                'before=$(git diff)' \
-                'nix fmt >/dev/null 2>&1 || exit 0' \
-                '[ "$before" = "$(git diff)" ] || { echo "nix fmt changed files; re-stage them, then commit." >&2; exit 1; }' \
-                > "$hook"
-              chmod +x "$hook"
-            fi
-          '';
+          # Robust pre-commit hook: point git at the tracked .githooks/ dir
+          # (worktree/submodule-safe; never clobbers an existing .git/hooks).
+          shellHook = "git config core.hooksPath .githooks";
         };
       }
     );

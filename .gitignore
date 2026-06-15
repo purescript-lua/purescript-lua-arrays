@@ -3,4 +3,5 @@
 !/.github/
 !/.tidyrc.json
 !/.lua-format
+!/.githooks/
 /output/
