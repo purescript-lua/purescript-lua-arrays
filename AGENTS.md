@@ -4,11 +4,21 @@ A PureScript→Lua FFI fork in the [`purescript-lua`](https://github.com/purescr
 
 ## Commands
 
-All commands run inside the nix dev shell:
-
 - Build: `nix develop -c ./scripts/build`
 - Test: `nix develop -c bash ./scripts/test` (only forks that ship Lua regression tests have one)
-- Lint: `nix develop -c luacheck --quiet --std lua51 --no-unused-args src/`
+- Lint: `nix develop -c luacheck --quiet --std lua51 --no-unused-args --max-line-length 130 src/`
+- Format: `nix fmt` (check: `nix fmt && git diff --exit-code`)
+
+## Formatting
+
+`nix fmt` runs treefmt (`treefmt.nix`): nixfmt for Nix, `dhall format`, purs-tidy
+for `*.purs` (config in `.tidyrc.json`), and LuaFormatter for the `*.lua` FFI
+(config in `.lua-format`). LuaFormatter is used over StyLua because it keeps the
+parentheses pslua's foreign-file parser requires. The Lua line budget is 130
+columns, matching the `luacheck --max-line-length` above. The check is
+content-based (`nix fmt && git diff --exit-code`) rather than `treefmt --ci`,
+since the in-place formatters bump mtime even when content is unchanged, which
+trips treefmt's `--fail-on-change`. CI and the pre-commit hook use it.
 
 ## Lua 5.1 target
 

@@ -1,4 +1,6 @@
 /.*
 !/.gitignore
 !/.github/
+!/.tidyrc.json
+!/.lua-format
 /output/

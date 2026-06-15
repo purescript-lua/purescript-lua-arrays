@@ -9,16 +9,33 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     pslua.url = "github:purescript-lua/purescript-lua";
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, flake-utils, purescript-overlay, pslua }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+      purescript-overlay,
+      pslua,
+      treefmt-nix,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = import nixpkgs {
           inherit system;
           overlays = [ purescript-overlay.overlays.default ];
         };
-      in {
+        treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
+      in
+      {
+        formatter = treefmtEval.config.build.wrapper;
+        checks.formatting = treefmtEval.config.build.check self;
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [
             dhall
@@ -31,8 +48,26 @@
             spago-bin.spago-0_21_0
             treefmt
           ];
+          # Install a content-based pre-commit hook. It compares the working
+          # tree diff before and after `nix fmt`, so it only objects to changes
+          # the formatter itself introduces (not the developer's existing
+          # unstaged work) and is not fooled by formatters that only bump mtime.
+          # Rewritten each shell entry to stay in sync with this flake.
+          shellHook = ''
+            hook=.git/hooks/pre-commit
+            if [ -d .git ]; then
+              printf '%s\n' \
+                '#!/usr/bin/env bash' \
+                'before=$(git diff)' \
+                'nix fmt >/dev/null 2>&1 || exit 0' \
+                '[ "$before" = "$(git diff)" ] || { echo "nix fmt changed files; re-stage them, then commit." >&2; exit 1; }' \
+                > "$hook"
+              chmod +x "$hook"
+            fi
+          '';
         };
-      });
+      }
+    );
 
   # --- Flake Local Nix Configuration ----------------------------
   nixConfig = {

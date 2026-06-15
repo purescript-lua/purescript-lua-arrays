@@ -43,10 +43,12 @@ derive newtype instance ord1NonEmptyArray :: Ord1 NonEmptyArray
 derive newtype instance semigroupNonEmptyArray :: Semigroup (NonEmptyArray a)
 
 derive newtype instance functorNonEmptyArray :: Functor NonEmptyArray
-derive newtype instance functorWithIndexNonEmptyArray :: FunctorWithIndex Int NonEmptyArray
+derive newtype instance functorWithIndexNonEmptyArray ::
+  FunctorWithIndex Int NonEmptyArray
 
 derive newtype instance foldableNonEmptyArray :: Foldable NonEmptyArray
-derive newtype instance foldableWithIndexNonEmptyArray :: FoldableWithIndex Int NonEmptyArray
+derive newtype instance foldableWithIndexNonEmptyArray ::
+  FoldableWithIndex Int NonEmptyArray
 
 instance foldable1NonEmptyArray :: Foldable1 NonEmptyArray where
   foldMap1 = foldMap1DefaultL
@@ -55,7 +57,8 @@ instance foldable1NonEmptyArray :: Foldable1 NonEmptyArray where
 
 derive newtype instance unfoldable1NonEmptyArray :: Unfoldable1 NonEmptyArray
 derive newtype instance traversableNonEmptyArray :: Traversable NonEmptyArray
-derive newtype instance traversableWithIndexNonEmptyArray :: TraversableWithIndex Int NonEmptyArray
+derive newtype instance traversableWithIndexNonEmptyArray ::
+  TraversableWithIndex Int NonEmptyArray
 
 instance traversable1NonEmptyArray :: Traversable1 NonEmptyArray where
   traverse1 f = runFn3 traverse1Impl apply map f
