@@ -49,3 +49,7 @@ A bare `function … end` or an unparenthesised expression fails to parse.
 ## Releasing
 
 Tag-driven, with no GitHub Release or changelog entry. The full conventions live in the [package-set repo](https://github.com/purescript-lua/purescript-lua-package-sets/blob/master/CONTRIBUTING.md): push an annotated tag on `master`, bump this fork's `version` in the package set's `src/packages.json`, refresh `latest-compatible-sets.json`, and push a `psc-*` set tag.
+
+## Decisions
+
+Cross-cutting decisions are recorded as ADRs in the [package-set repo](https://github.com/purescript-lua/purescript-lua-package-sets/tree/master/docs/adr). Read them before a decision that affects the set, and add one after making such a decision.
