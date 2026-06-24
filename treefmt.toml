@@ -1,4 +1,0 @@
-[formatter.lua]
-command = "lua-format"
-options = ["--in-place"]
-includes = ["src/**/*.lua", "test/**/*.lua", "dist/*.lua"]
