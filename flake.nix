@@ -38,14 +38,13 @@
         checks.formatting = treefmtEval.config.build.check self;
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [
-            dhall
             lua51Packages.lua
             lua51Packages.luacheck
             luaformatter
             nixfmt-rfc-style
             pslua.packages.${system}.default
             purs-bin.purs-0_15_16
-            spago-bin.spago-0_21_0
+            spago-bin.spago-1_0_4
             treefmt
           ];
           # Robust pre-commit hook: point git at the tracked .githooks/ dir

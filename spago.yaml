@@ -1,0 +1,28 @@
+# Lua fork of purescript-arrays. Builds against the published purescript-lua
+# package set (the Lua forks override their JavaScript-targeting upstreams).
+#
+# A no-op backend (`true`) makes spago compile with `--codegen corefn` rather
+# than JS: the FFI here is Lua, not JavaScript. scripts/build then runs pslua
+# over the emitted corefn to produce dist/*.lua.
+package:
+  name: lua-arrays
+  dependencies:
+    - bifunctors
+    - control
+    - foldable-traversable
+    - functions
+    - maybe
+    - nonempty
+    - partial
+    - prelude
+    - safe-coerce
+    - st
+    - tailrec
+    - tuples
+    - unfoldable
+    - unsafe-coerce
+workspace:
+  backend:
+    cmd: "true"
+  packageSet:
+    url: https://github.com/purescript-lua/purescript-lua-package-sets/releases/download/psc-0.15.15-20260624/packages.json

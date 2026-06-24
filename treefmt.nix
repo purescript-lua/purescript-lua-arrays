@@ -5,9 +5,6 @@
   # Nix — RFC 166 formatter.
   programs.nixfmt.enable = true;
 
-  # Dhall — spago.dhall / packages.dhall layout.
-  programs.dhall.enable = true;
-
   # PureScript — purs-tidy is not a first-class treefmt program, so wire it via
   # the generic mechanism. It picks up `.tidyrc.json` from the project root.
   settings.formatter.purs-tidy = {
