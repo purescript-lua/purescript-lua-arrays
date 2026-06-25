@@ -48,7 +48,7 @@ A bare `function … end` or an unparenthesised expression fails to parse.
 
 ## Releasing
 
-Tag-driven, with no GitHub Release or changelog entry. The full conventions live in the [package-set repo](https://github.com/purescript-lua/purescript-lua-package-sets/blob/master/CONTRIBUTING.md): push an annotated tag on `master`, bump this fork's `version` in the package set's `src/packages.json`, refresh `latest-compatible-sets.json`, and push a `psc-*` set tag.
+Tag-driven. The full conventions live in the [package-set repo](https://github.com/purescript-lua/purescript-lua-package-sets/blob/master/CONTRIBUTING.md): write a `changelog.d/` fragment for any `src/` change, run `scriv collect --version <tag>` and commit the updated `CHANGELOG.md`, then push an annotated tag on `master`, bump this fork's `version` in the package set's `src/packages.json`, refresh `latest-compatible-sets.json`, and push a `psc-*` set tag.
 
 ## Decisions
 

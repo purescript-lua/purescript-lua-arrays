@@ -44,6 +44,7 @@
             nixfmt-rfc-style
             pslua.packages.${system}.default
             purs-bin.purs-0_15_16
+            scriv
             spago-bin.spago-1_0_4
             treefmt
           ];
