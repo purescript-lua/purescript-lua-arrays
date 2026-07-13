@@ -14,17 +14,15 @@ local function move(a1, f, e, t, a2)
   return a2
 end
 
-local function copyImpl(xs) return function() return move(xs, 1, #xs, 1, {}) end end
+local function copyImpl(xs) return move(xs, 1, #xs, 1, {}) end
 
 return {
   new = (function() return {} end),
   peekImpl = (function(just, nothing, i, xs)
-    return function()
-      if i >= 0 and i < #xs then
-        return just(xs[i + 1])
-      else
-        return nothing
-      end
+    if i >= 0 and i < #xs then
+      return just(xs[i + 1])
+    else
+      return nothing
     end
   end),
   pokeImpl = (function(i, a, xs)
@@ -73,8 +71,8 @@ return {
   end),
   unsafeFreezeImpl = (function(xs) return xs end),
   unsafeThawImpl = (function(xs) return xs end),
-  freeze = (copyImpl),
-  thaw = (copyImpl),
+  freezeImpl = (copyImpl),
+  thawImpl = (copyImpl),
   sortByImpl = ((function()
     local function rshift(x, by) return math.floor(x / 2 ^ by) end
 
@@ -119,12 +117,10 @@ return {
       return xs
     end
   end)()),
-  toAssocArray = (function(xs)
-    return function()
-      local r = {}
-      for i = 1, #xs do r[i] = {index = i - 1, value = xs[i]} end
-      return r
-    end
+  toAssocArrayImpl = (function(xs)
+    local r = {}
+    for i = 1, #xs do r[i] = {index = i - 1, value = xs[i]} end
+    return r
   end),
   pushImpl = (function(a, xs)
     xs[#xs + 1] = a
