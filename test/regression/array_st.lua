@@ -69,6 +69,15 @@ do
   check("thawImpl is independent", copy[1] == 1, "copy mutated to " .. tostring(copy[1]))
 end
 
+-- cloneImpl (the same move-to-fresh-table path) is an independent copy.
+do
+  local xs = {1, 2, 3}
+  local copy = ST.cloneImpl(xs)
+  checkArray("cloneImpl copies", copy, {1, 2, 3})
+  xs[1] = 99
+  check("cloneImpl is independent", copy[1] == 1, "copy mutated to " .. tostring(copy[1]))
+end
+
 -- toAssocArrayImpl builds zero-based {index, value} records.
 do
   local r = ST.toAssocArrayImpl({"a", "b"})
