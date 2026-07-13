@@ -73,6 +73,7 @@ return {
   unsafeThawImpl = (function(xs) return xs end),
   freezeImpl = (copyImpl),
   thawImpl = (copyImpl),
+  cloneImpl = (copyImpl),
   sortByImpl = ((function()
     local function rshift(x, by) return math.floor(x / 2 ^ by) end
 
