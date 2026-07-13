@@ -41,16 +41,47 @@ local function check(name, cond, detail)
   end
 end
 
+local function just(x) return {tag = "just", value = x} end
+local nothing = {tag = "nothing"}
+
 --------------------------------------------------------------------------------
 -- Data/Array/ST.lua: move-based operations -----------------------------------
 
--- freeze (= copyImpl, the move-to-fresh-table path) is an independent copy.
+-- The ST foreigns follow the STFn convention: an STFnN entry is an N-ary
+-- function that performs the effect when called and returns the result
+-- directly — no inner thunk, and the export carries the `*Impl` name the
+-- PureScript side declares.
+
+-- freezeImpl / thawImpl (the move-to-fresh-table path) are independent copies.
 do
   local xs = {1, 2, 3}
-  local copy = ST.freeze(xs)()
-  checkArray("freeze copies", copy, {1, 2, 3})
+  local copy = ST.freezeImpl(xs)
+  checkArray("freezeImpl copies", copy, {1, 2, 3})
   copy[1] = 99
-  check("freeze is independent", xs[1] == 1, "source mutated to " .. tostring(xs[1]))
+  check("freezeImpl is independent", xs[1] == 1, "source mutated to " .. tostring(xs[1]))
+end
+
+do
+  local xs = {1, 2, 3}
+  local copy = ST.thawImpl(xs)
+  checkArray("thawImpl copies", copy, {1, 2, 3})
+  xs[1] = 99
+  check("thawImpl is independent", copy[1] == 1, "copy mutated to " .. tostring(copy[1]))
+end
+
+-- toAssocArrayImpl builds zero-based {index, value} records.
+do
+  local r = ST.toAssocArrayImpl({"a", "b"})
+  check("toAssocArrayImpl builds records",
+        type(r) == "table" and #r == 2 and r[1].index == 0 and r[1].value == "a" and r[2].index == 1 and r[2].value == "b",
+        "got " .. tostring(r))
+end
+
+-- peekImpl returns the Maybe itself, not a thunk producing it.
+do
+  local r = ST.peekImpl(just, nothing, 1, {10, 20, 30})
+  check("peekImpl returns the Maybe directly", type(r) == "table" and r.tag == "just" and r.value == 20, "got " .. type(r))
+  check("peekImpl out of range is nothing", ST.peekImpl(just, nothing, 9, {10}) == nothing, "expected nothing")
 end
 
 -- pushAllImpl appends and reports the new length.
@@ -155,9 +186,6 @@ end
 
 --------------------------------------------------------------------------------
 -- Data/Array.lua: unpack-based operations ------------------------------------
-
-local function just(x) return {tag = "just", value = x} end
-local nothing = {tag = "nothing"}
 
 -- unconsImpl splits head / tail; the tail is `{ unpack(xs, 2) }`.
 do
