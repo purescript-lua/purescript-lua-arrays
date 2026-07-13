@@ -9,6 +9,19 @@ fork entries are assembled from fragments in `changelog.d/` with
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-v7.4.2'></a>
+## v7.4.2 - 2026-07-13
+
+### Fixed
+
+- `Data.Array.ST` FFI matches its `STFn` declarations again: the Lua module
+  exports `thawImpl`/`freezeImpl`/`toAssocArrayImpl` (previously only the
+  pre-`STFn` names `thaw`/`freeze`/`toAssocArray` existed, leaving the
+  declared foreigns unbound, so `thaw`, `freeze`, `withArray` and
+  `toAssocArray` crashed with a nil call), and `peekImpl` returns its result
+  directly instead of an inner thunk (previously `peek` produced a function
+  instead of the `Maybe`).
+
 ## v7.4.1 - 2026-06-15
 
 ### Fixed
