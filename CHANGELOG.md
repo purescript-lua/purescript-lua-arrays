@@ -9,6 +9,17 @@ fork entries are assembled from fragments in `changelog.d/` with
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-v7.4.3'></a>
+## v7.4.3 - 2026-07-14
+
+### Fixed
+
+- `Data.Array.ST` exports `clone` again: upstream v7.3.0 declares
+  `clone`/`cloneImpl` (`STFn1`), but the fork carried neither, so code using
+  `Data.Array.ST.clone` failed to compile against the fork. The Lua module
+  now provides `cloneImpl`, the same independent copy the FFI already uses
+  for `thawImpl`/`freezeImpl`.
+
 <a id='changelog-v7.4.2'></a>
 ## v7.4.2 - 2026-07-13
 
